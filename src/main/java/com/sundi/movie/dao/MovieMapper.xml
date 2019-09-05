@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sundi.movie.dao.MovieMapper" >
+ 	
+ 	<select id="getMovieList" resultType="Map">
+ 		select a.*,GROUP_CONCAT(c.tname)types from t_movie a left join m_t b on a.mid=b.mid 
+ 		left join t_type c on b.tid=c.tid 
+ 		<where>
+ 		<if test="''!=mohu and null!=mohu">
+ 			and a.mname like '%${mohu}%'
+ 		</if>
+ 		</where>
+ 		GROUP BY a.mid
+ 	</select>
+ 	
+ 	<select id="getTypeList" resultType="Type">
+ 		select * from t_type
+ 	</select>
+ 	
+ 	<insert id="addMovie">
+ 		<selectKey order="AFTER" keyProperty="mid" resultType="int">
+ 			select LAST_INSERT_ID()
+ 		</selectKey>
+ 		insert into t_movie set mname=#{mname},area=#{area},actor=#{actor},dates=#{dates}
+ 	</insert>
+ 	<insert id="addCenter">
+ 		insert into m_t set mid=#{mid},tid=#{tid}
+ 	</insert>
+ 	
+ 	<select id="getMovieByMid" resultType="Movie">
+ 		select * from t_movie where mid=#{mid}
+ 	</select>
+ 	<select id="getTypeByMid" resultType="Type">
+ 		select * from m_t where mid=#{mid}
+ 	</select>
+ 	
+ 	<update id="updMovie">
+ 		update t_movie set mname=#{mname},area=#{area},actor=#{actor},dates=#{dates} where mid=#{mid}
+ 	</update>
+ 	<delete id="delCenter">
+ 		delete from m_t where mid in(${mid})
+ 	</delete>
+ 	
+ 	<delete id="delMovie">
+ 		delete from t_movie where mid in(${mid})
+ 	</delete>
+ 	<delete id="delCenter2">
+ 		delete from m_t where mid in(${mid})
+ 	</delete>
+</mapper>
+
